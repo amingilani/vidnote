@@ -1,14 +1,15 @@
 #!/bin/bash
 
-# Usage: ./run_processor.sh <path_to_video> <output_folder>
+# Usage: ./run_processor.sh <path_to_video> <output_folder> [threshold]
 
-if [ "$#" -ne 2 ]; then
-    echo "Usage: $0 <path_to_video> <output_folder>"
+if [ "$#" -lt 2 ]; then
+    echo "Usage: $0 <path_to_video> <output_folder> [threshold]"
     exit 1
 fi
 
 VIDEO_PATH=$(realpath "$1")
 OUTPUT_PATH=$(realpath "$2")
+THRESHOLD=${3:-15.0}
 VIDEO_DIR=$(dirname "$VIDEO_PATH")
 VIDEO_FILENAME=$(basename "$VIDEO_PATH")
 
@@ -22,7 +23,7 @@ if ! podman image exists video-textbook; then
     podman build -t video-textbook .
 fi
 
-echo "Running container..."
+echo "Running container with threshold $THRESHOLD..."
 # Run Container
 # -v Mount the folder containing the video to /data/input
 # -v Mount the output folder to /data/output
@@ -34,4 +35,5 @@ podman run --rm -it \
   video-textbook \
   --input_video "/data/input/$VIDEO_FILENAME" \
   --output_dir "/data/output" \
-  --temp_dir "/data/tmp"
+  --temp_dir "/data/tmp" \
+  --threshold "$THRESHOLD"

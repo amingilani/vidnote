@@ -89,7 +89,6 @@ def generate_markdown(transcript, slides, output_file):
                 slide = slides[current_slide_idx]
                 if start >= slide["timestamp"]:
                     f.write(f"\n\n![Scene {current_slide_idx+1}](images/{slide['image_filename']})\n\n")
-                    f.write(f"**[{int(slide['timestamp'] // 60)}:{int(slide['timestamp'] % 60):02d}]**\n\n")
                     current_slide_idx += 1
                 else:
                     break
