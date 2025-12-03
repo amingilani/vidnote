@@ -46,16 +46,20 @@ The underlying Python application (`main.py`) accepts the following arguments. Y
 
 ### Changing the Threshold
 
-If you find that slides are being missed or too many false positives are detected, you can adjust the `--threshold`.
+The `--threshold` parameter controls the sensitivity of the scene detection algorithm (PySceneDetect's `ContentDetector`). It represents the minimum change in average pixel intensity between frames required to trigger a scene cut.
 
-To do this via the wrapper script, you would need to append the argument to the `podman run` command in `run_processor.sh`:
+-   **Default (15.0)**: Good for most slide presentations where transitions are distinct but might be subtle (e.g., just text changing).
+-   **Lower values (e.g., 5.0 - 10.0)**: **More Sensitive**. Use this if the tool is missing slide changes (e.g., only a small bullet point appears). Warning: May detect false positives like mouse movements or small animations.
+-   **Higher values (e.g., 30.0 - 50.0)**: **Less Sensitive**. Use this if the tool is detecting too many "scenes" that aren't real slides (e.g., webcam video of the speaker moving slightly).
+
+To change the threshold via the wrapper script, append the argument to the `podman run` command in `run_processor.sh`:
 
 ```bash
   video-textbook \
   --input_video "/data/input/$VIDEO_FILENAME" \
   --output_dir "/data/output" \
   --temp_dir "/data/tmp" \
-  --threshold 20.0  # Example: Less sensitive
+  --threshold 10.0  # Example: More sensitive for subtle changes
 ```
 
 ## Project Structure
