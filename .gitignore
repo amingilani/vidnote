@@ -8,8 +8,10 @@
 
 # Output and Temp directories
 output/
-tmp_data/
-temp/
+
+# Data directory (ignore contents but keep folder)
+data/*
+!data/.gitkeep
 
 # Python
 __pycache__/

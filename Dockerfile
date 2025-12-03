@@ -14,7 +14,8 @@ RUN pip install --no-cache-dir \
     scenedetect[opencv] \
     opencv-python-headless \
     tqdm \
-    numpy
+    numpy \
+    pytest
 
 # 3. Copy Application Code
 WORKDIR /app

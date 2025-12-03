@@ -13,7 +13,7 @@ VIDEO_DIR=$(dirname "$VIDEO_PATH")
 VIDEO_FILENAME=$(basename "$VIDEO_PATH")
 
 # Create local temp dir
-mkdir -p ./tmp_data
+mkdir -p ./data/tmp
 
 # Build image if not exists
 # Check if image exists, if not build it
@@ -30,7 +30,7 @@ echo "Running container..."
 podman run --rm -it \
   -v "$VIDEO_DIR":/data/input:Z \
   -v "$OUTPUT_PATH":/data/output:Z \
-  -v "./tmp_data":/data/tmp:Z \
+  -v "./data/tmp":/data/tmp:Z \
   video-textbook \
   --input_video "/data/input/$VIDEO_FILENAME" \
   --output_dir "/data/output" \

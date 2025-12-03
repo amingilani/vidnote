@@ -3,7 +3,7 @@ import os
 import shutil
 import whisper
 import cv2
-from scenedetect import VideoManager, SceneManager
+from scenedetect import open_video, SceneManager
 from scenedetect.detectors import ContentDetector
 
 def parse_args():
@@ -11,6 +11,7 @@ def parse_args():
     parser.add_argument("--input_video", required=True, help="Path to video file inside container")
     parser.add_argument("--output_dir", required=True, help="Path to write results")
     parser.add_argument("--temp_dir", required=True, help="Path for intermediate files")
+    parser.add_argument("--threshold", type=float, default=15.0, help="Scene detection threshold (default: 15.0)")
     return parser.parse_args()
 
 def extract_audio(video_path, audio_path):
@@ -25,17 +26,14 @@ def transcribe_audio(audio_path, model_size="base"):
     model = whisper.load_model(model_size)
     return model.transcribe(audio_path)
 
-def extract_slides(video_path, output_dir):
+def extract_slides(video_path, output_dir, threshold=15.0):
     # Logic to detect scenes and save frames using scenedetect + cv2
-    print("Detecting scenes...")
-    video_manager = VideoManager([video_path])
+    print(f"Detecting scenes with threshold {threshold}...")
+    video = open_video(video_path)
     scene_manager = SceneManager()
-    scene_manager.add_detector(ContentDetector())
+    scene_manager.add_detector(ContentDetector(threshold=threshold))
     
-    video_manager.set_downscale_factor()
-    video_manager.start()
-    
-    scene_manager.detect_scenes(frame_source=video_manager)
+    scene_manager.detect_scenes(video, show_progress=True)
     scene_list = scene_manager.get_scene_list()
     
     print(f"Found {len(scene_list)} scenes.")
@@ -64,7 +62,6 @@ def extract_slides(video_path, output_dir):
             })
     
     cap.release()
-    video_manager.release()
     
     return slides
 
@@ -111,15 +108,14 @@ def main():
     
     # 1. Audio
     audio_temp = os.path.join(args.temp_dir, "extracted_audio.mp3")
-    if not os.path.exists(audio_temp):
-        extract_audio(args.input_video, audio_temp)
+    extract_audio(args.input_video, audio_temp)
     
     print("Transcribing...")
     transcript_result = transcribe_audio(audio_temp)
     
     # 2. Video
     print("Extracting slides...")
-    slides = extract_slides(args.input_video, images_dir)
+    slides = extract_slides(args.input_video, images_dir, threshold=args.threshold)
     
     # 3. Merge
     output_md = os.path.join(args.output_dir, "transcript.md")
