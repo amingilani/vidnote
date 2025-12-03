@@ -1,0 +1,19 @@
+# Video files
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.mp3
+*.wav
+
+# Output and Temp directories
+output/
+tmp_data/
+temp/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# System
+.DS_Store
