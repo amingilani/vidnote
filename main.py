@@ -6,6 +6,14 @@ import cv2
 from scenedetect import open_video, SceneManager
 from scenedetect.detectors import ContentDetector
 import numpy as np
+import hashlib
+
+def calculate_sha512(file_path):
+    sha512_hash = hashlib.sha512()
+    with open(file_path, "rb") as f:
+        for byte_block in iter(lambda: f.read(4096), b""):
+            sha512_hash.update(byte_block)
+    return sha512_hash.hexdigest()
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Video to Textbook Converter")
@@ -141,10 +149,14 @@ def extract_slides(video_path, output_dir, threshold=15.0):
     
     return slides
 
-def generate_markdown(transcript, slides, output_file):
+def generate_markdown(transcript, slides, output_file, video_filename, video_hash):
     print(f"Generating markdown to {output_file}...")
     
     with open(output_file, "w") as f:
+        f.write("---\n")
+        f.write(f"source_file: {video_filename}\n")
+        f.write(f"sha512: {video_hash}\n")
+        f.write("---\n\n")
         f.write("# Video Transcript\n\n")
         
         # We will iterate through transcript segments and insert images when appropriate
@@ -194,7 +206,12 @@ def main():
     
     # 3. Merge
     output_md = os.path.join(args.output_dir, "transcript.md")
-    generate_markdown(transcript_result, slides, output_md)
+    
+    print("Calculating file hash...")
+    video_hash = calculate_sha512(args.input_video)
+    video_filename = os.path.basename(args.input_video)
+    
+    generate_markdown(transcript_result, slides, output_md, video_filename, video_hash)
     print("Done!")
 
 if __name__ == "__main__":

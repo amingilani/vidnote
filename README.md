@@ -2,6 +2,8 @@
 
 This project provides a containerized service that converts a video lecture into a formatted Markdown document, complete with correlated slide screenshots. It uses OpenAI's Whisper for transcription and PySceneDetect for extracting slide images.
 
+[![Video Walkthrough](example/images/scene_001.jpg)](http://files.clares.ca/video79386405-A6D2-4BE7-BC63-157EC1EF9191.mp4)
+
 ## Prerequisites
 
 - **Podman**: The service runs inside a Podman container. Ensure Podman is installed and initialized (`podman machine init`, `podman machine start`).
@@ -27,8 +29,6 @@ This command will:
 4.  Output the results to `data/output`.
 
 ## Example Output
-
-<video src="http://files.clares.ca/video79386405-A6D2-4BE7-BC63-157EC1EF9191.mp4" controls width="100%"></video>
 
 [View Example Output](example/transcript.md)
 

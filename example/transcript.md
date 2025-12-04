@@ -1,3 +1,8 @@
+---
+source_file: lecture.mp4
+sha512: 4c19df8758301c7721035ca140cbdf27ec7958eff2f2df7f4c8c5e1c2efd36fd5ac0cca29ebde7c690a5003ea7a5d9418d1dc908feb79378823418bd59ec1d58
+---
+
 # Video Transcript
 
 
