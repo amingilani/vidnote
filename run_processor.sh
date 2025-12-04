@@ -18,9 +18,9 @@ mkdir -p ./data/tmp
 
 # Build image if not exists
 # Check if image exists, if not build it
-if ! podman image exists video-textbook; then
+if ! podman image exists vidnote; then
     echo "Building container image..."
-    podman build -t video-textbook .
+    podman build -t vidnote .
 fi
 
 echo "Running container with threshold $THRESHOLD..."
@@ -32,7 +32,7 @@ podman run --rm -it \
   -v "$VIDEO_DIR":/data/input:Z \
   -v "$OUTPUT_PATH":/data/output:Z \
   -v "./data/tmp":/data/tmp:Z \
-  video-textbook \
+  vidnote \
   --input_video "/data/input/$VIDEO_FILENAME" \
   --output_dir "/data/output" \
   --temp_dir "/data/tmp" \

@@ -1,4 +1,4 @@
-# Video to Textbook Converter
+# Vidnote
 
 This project provides a containerized service that converts a video lecture into a formatted Markdown document, complete with correlated slide screenshots. It uses OpenAI's Whisper for transcription and PySceneDetect for extracting slide images.
 
@@ -21,10 +21,16 @@ The easiest way to run the converter is using the provided wrapper script:
 ```
 
 This command will:
-1.  Build the `video-textbook` container image (if it doesn't exist).
+1.  Build the `vidnote` container image (if it doesn't exist).
 2.  Mount the necessary directories.
 3.  Process the video.
 4.  Output the results to `data/output`.
+
+## Example Output
+
+<video src="http://files.clares.ca/video79386405-A6D2-4BE7-BC63-157EC1EF9191.mp4" controls width="100%"></video>
+
+[View Example Output](example/transcript.md)
 
 ## Output Structure
 
@@ -55,7 +61,7 @@ The `--threshold` parameter controls the sensitivity of the scene detection algo
 To change the threshold via the wrapper script, append the argument to the `podman run` command in `run_processor.sh`:
 
 ```bash
-  video-textbook \
+  vidnote \
   --input_video "/data/input/$VIDEO_FILENAME" \
   --output_dir "/data/output" \
   --temp_dir "/data/tmp" \
