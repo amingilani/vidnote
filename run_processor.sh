@@ -9,7 +9,7 @@ fi
 
 VIDEO_PATH=$(realpath "$1")
 OUTPUT_PATH=$(realpath "$2")
-THRESHOLD=${3:-15.0}
+THRESHOLD=${3:-10.0}
 VIDEO_DIR=$(dirname "$VIDEO_PATH")
 VIDEO_FILENAME=$(basename "$VIDEO_PATH")
 

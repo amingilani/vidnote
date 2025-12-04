@@ -5,6 +5,7 @@ import whisper
 import cv2
 from scenedetect import open_video, SceneManager
 from scenedetect.detectors import ContentDetector
+import numpy as np
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Video to Textbook Converter")
@@ -43,22 +44,97 @@ def extract_slides(video_path, output_dir, threshold=15.0):
     
     for i, scene in enumerate(scene_list):
         start_time = scene[0].get_seconds()
-        # We want the first frame of the scene. 
-        # Note: scene[0] is start frame/time, scene[1] is end frame/time.
+        end_time = scene[1].get_seconds()
         
-        # Set capture to the start of the scene
+        # Motion-based stable frame detection
+        # We will analyze frames in the scene to find the one with minimum motion.
+        
         cap.set(cv2.CAP_PROP_POS_MSEC, start_time * 1000)
-        success, frame = cap.read()
         
-        if success:
+        # Online frame selection to save memory
+        best_candidate = None # {frame, diff, content}
+        min_diff_seen = float('inf')
+        stability_buffer = 2.0
+        
+        frame_count = 0
+        prev_frame = None
+        
+        while True:
+            current_time_msec = cap.get(cv2.CAP_PROP_POS_MSEC)
+            if current_time_msec > end_time * 1000:
+                break
+                
+            success, frame = cap.read()
+            if not success:
+                break
+            
+            # Process every 5th frame to speed up
+            if frame_count % 5 == 0:
+                score = float('inf')
+                if prev_frame is not None:
+                    # Calculate difference
+                    gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                    gray_prev = cv2.cvtColor(prev_frame, cv2.COLOR_BGR2GRAY)
+                    score = cv2.mean(cv2.absdiff(gray_frame, gray_prev))[0]
+                else:
+                    # First frame, treat as 0 diff
+                    score = 0.0
+                
+                # Update global min diff seen for this scene
+                if score < min_diff_seen:
+                    min_diff_seen = score
+                
+                # Calculate visual content (standard deviation)
+                _, std_dev = cv2.meanStdDev(frame)
+                content_score = np.mean(std_dev)
+                
+                # Decide if this frame is the new best
+                is_better = False
+                
+                if best_candidate is None:
+                    is_better = True
+                else:
+                    # Check if current best is still stable enough
+                    if best_candidate['diff'] > min_diff_seen + stability_buffer:
+                        # Current best is unstable compared to what we've seen.
+                        # We must switch to something stable.
+                        if score <= min_diff_seen + stability_buffer:
+                            is_better = True
+                    else:
+                        # Current best is stable. Check if new frame is stable AND has better content.
+                        if score <= min_diff_seen + stability_buffer:
+                            if content_score > best_candidate['content']:
+                                is_better = True
+                
+                if is_better:
+                    best_candidate = {
+                        'frame': frame.copy(),
+                        'diff': score,
+                        'content': content_score
+                    }
+                    # print(f"  New best: Diff={score:.2f}, Content={content_score:.2f}")
+                
+                prev_frame = frame.copy()
+            
+            frame_count += 1
+            
+        # Use the best candidate found
+        if best_candidate is not None:
+            best_frame = best_candidate['frame']
+        else:
+            # Fallback
+            cap.set(cv2.CAP_PROP_POS_MSEC, (start_time + end_time) / 2 * 1000)
+            _, best_frame = cap.read()
+
+        if best_frame is not None:
             image_filename = f"scene_{i+1:03d}.jpg"
             image_path = os.path.join(output_dir, image_filename)
-            cv2.imwrite(image_path, frame)
+            cv2.imwrite(image_path, best_frame)
             
             slides.append({
                 "timestamp": start_time,
                 "image_filename": image_filename,
-                "end_timestamp": scene[1].get_seconds()
+                "end_timestamp": end_time
             })
     
     cap.release()
