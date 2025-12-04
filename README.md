@@ -1,6 +1,13 @@
 # Vidnote
 
-This project provides a containerized service that converts a video lecture into a formatted Markdown document, complete with correlated slide screenshots. It uses OpenAI's Whisper for transcription and PySceneDetect for extracting slide images.
+Converts a video lecture into a formatted Markdown document, complete with correlated slide screenshots. It uses OpenAI's Whisper for transcription and PySceneDetect for extracting slide images.
+
+**Note:** This is heavily vibe coded for the purpose. I have no use for this
+tool apart from converting older video lectures at [clares.ca](https://www.clares.ca/) into more maintainble markdown files.
+
+## Example
+
+See the transcript for the following video [here](example/transcript.md)
 
 [![Video Walkthrough](example/images/scene_001.jpg)](http://files.clares.ca/video79386405-A6D2-4BE7-BC63-157EC1EF9191.mp4)
 
@@ -16,11 +23,6 @@ The easiest way to run the converter is using the provided wrapper script:
 ./run_processor.sh <path_to_video> <output_folder>
 ```
 
-### Example
-
-```bash
-./run_processor.sh data/input/lecture.mp4 data/output
-```
 
 This command will:
 1.  Build the `vidnote` container image (if it doesn't exist).
@@ -28,9 +30,6 @@ This command will:
 3.  Process the video.
 4.  Output the results to `data/output`.
 
-## Example Output
-
-[View Example Output](example/transcript.md)
 
 ## Output Structure
 
