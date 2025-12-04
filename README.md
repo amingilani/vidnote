@@ -28,7 +28,22 @@ This command will:
 1.  Build the `vidnote` container image (if it doesn't exist).
 2.  Mount the necessary directories.
 3.  Process the video.
+3.  Process the video.
 4.  Output the results to `data/output`.
+
+### Batch Processing
+
+To process multiple videos at once, place your `.mp4` files in the `vids/` directory and run:
+
+```bash
+./batch_process.sh
+```
+
+This script will:
+- Iterate through all videos in `vids/`.
+- Create a corresponding folder in `transcripts/` for each video.
+- Skip videos that have already been processed (idempotent).
+- Handle interruptions (Ctrl+C) gracefully.
 
 
 ## Output Structure

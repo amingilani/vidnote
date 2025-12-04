@@ -28,7 +28,7 @@ echo "Running container with threshold $THRESHOLD..."
 # -v Mount the folder containing the video to /data/input
 # -v Mount the output folder to /data/output
 # -v Mount the local tmp folder to /data/tmp
-podman run --rm -it \
+podman run --rm \
   -v "$VIDEO_DIR":/data/input:Z \
   -v "$OUTPUT_PATH":/data/output:Z \
   -v "./data/tmp":/data/tmp:Z \
@@ -37,3 +37,4 @@ podman run --rm -it \
   --output_dir "/data/output" \
   --temp_dir "/data/tmp" \
   --threshold "$THRESHOLD"
+

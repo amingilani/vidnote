@@ -19,3 +19,7 @@ __pycache__/
 
 # System
 .DS_Store
+
+# Batch processing
+vids/
+transcripts/
